@@ -291,7 +291,9 @@ def predict():
     # reports = list(reports)
     # reports = [{**report, '_id': str(report['_id'])} for report in reports]
     # return jsonify(reports)
-    return render_template('predict.html')
+    model_url = os.environ.get("MODEL_URL", "https://ksp-models.onrender.com")
+    return render_template('predict.html', model_url=model_url)
+
 
 
 # @app.route("/comments")

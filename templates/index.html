@@ -268,6 +268,12 @@
         nav.navigation{
             background-color: #393E46;
         }
+
+        .first-row{
+            border : 2px solid #00ADB5;
+        }
+
+        
     </style>
 </head>
 
@@ -614,8 +620,12 @@
                     instanceHtml += '<table id="instances-table" class="table table-striped">';
                     instanceHtml += '<thead><tr><th>Time Stamp</th><th>Vechicle Count</th><th>Pot Hole Count</th><th>Parked Vehicle Count</th><th>People Count</th></tr></thead>';
                     instanceHtml += '<tbody>';
-                    data.forEach(instance => {
-                        instanceHtml += `<tr><td>${instance.time_stamp}</td><td>${instance.vehicle_count}</td><td>${instance.pot_hole_count}</td><td>${instance.parked_vehicle_count || ''}</td><td>${instance.people_count}</td></tr>`;
+                    data.forEach((instance, ind) => {
+                        if(ind==0){
+                            instanceHtml += `<tr class="first-row"><td>Now<img src="{{url_for('static', filename='images/info.png')}}" alt="" class="menu-img"></td><td>${instance.vehicle_count}</td><td>${instance.pot_hole_count}</td><td>${instance.parked_vehicle_count || ''}</td><td>${instance.people_count}</td></tr>`;
+                        }else{
+                            instanceHtml += `<tr><td>${instance.time_stamp}</td><td>${instance.vehicle_count}</td><td>${instance.pot_hole_count}</td><td>${instance.parked_vehicle_count || ''}</td><td>${instance.people_count}</td></tr>`;
+                        }
                     });
                     instanceHtml += '</tbody></table>';
 

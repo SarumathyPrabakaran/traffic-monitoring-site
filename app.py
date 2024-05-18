@@ -283,7 +283,7 @@ def get_all_reports():
     reports = list(reports)
     reports = [{**report, '_id': str(report['_id'])} for report in reports]
     # return jsonify(reports)
-    return render_template('comments.html', reports = reports)
+    return render_template('comments.html', reports = reports[::-1])
 
 @app.route("/predict")
 def predict():

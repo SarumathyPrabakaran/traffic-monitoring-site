@@ -1,0 +1,60 @@
+body {
+  background-color: rgb(234, 232, 232);
+}
+
+.detail-container {
+  margin-top: 80px;
+}
+.v-nums {
+  font-family: "Poppins", sans-serif;
+  font-size: 40px;
+  font-weight: 500;
+  color: rgb(83, 83, 83);
+  justify-content: center;
+}
+
+.v-name {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: black;
+  justify-content: center;
+}
+
+.map {
+  border: 3px solid rgb(99, 98, 98);
+  border-radius: 15px;
+}
+
+.traffic-table {
+  --bs-table-bg: rgb(234, 232, 232);
+  width: 40rem;
+  height: 25rem;
+}
+
+.table-font {
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  padding: 20px !important;
+}
+
+.map-container {
+  margin-top: 50px;
+}
+
+.map iframe {
+  width: 620px;
+  height: 500px;
+  margin: 0;
+  padding: 0;
+}
+
+.table-heading {
+  font-size: 30px;
+  color: rgb(66, 66, 66) !important;
+}
+
+#map {
+  height: 500px;
+  width: 500px;
+}

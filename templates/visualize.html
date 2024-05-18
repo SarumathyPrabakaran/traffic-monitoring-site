@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Traffic Data Visualization</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Aclonica&family=Advent+Pro&family=Dancing+Script&family=Inknut+Antiqua&family=Inter&family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Kaushan+Script&family=Montserrat:wght@400;500;600&family=Open+Sans:wght@400;500;600&family=Poppins:ital,wght@0,300;0,500;0,600;1,300&family=Rubik:wght@300;400;500;600;700;800&family=Sen:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .navbar {
+            width: 5%;
+            height: 100vh;
+            /* position : fixed; */
+            background-color: #222831 !important;
+            color: #fff;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: normal;
+        }
+
+        .nav-texts {
+            font-size: 0.7rem;
+        }
+
+        .chart-content {
+            padding: 2rem;
+        }
+
+        .form-data {
+            width: 100%;
+            gap: 4%;
+        }
+
+        .chart-content {
+            width: 100%;
+        }
+
+        .menu-img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .active-menu {
+            border-left: 3px solid #00ADB5;
+        }
+
+        .menu {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3;
+        }
+
+        a {
+            text-decoration: none;
+            color: white;
+        }
+
+        nav.navigation {
+            background-color: #393E46;
+            height: 100vh;
+        }
+        .chart-content{
+            height: 100vh;
+            overflow-y: scroll;
+        }
+
+        /* .div-1{
+            width: 440px;
+            height: 380px;
+        }
+
+        .div-2{
+
+        }
+        .div-3{
+
+        } */
+        .div-4{
+            background-color: #21313C;
+            width: 500px;
+            color : white !important;
+        } 
+
+        .node-1 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #F09E75;
+        }
+        .node-2 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #196EE6;
+        }
+        .node-3 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #E6B219;
+        }
+        .node-4 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #E6196E;
+        }
+        .node-5 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgb(25,195,230);
+        }
+        .node-6 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #116149;
+        }
+        .node-7 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgb(230,93,25);
+        }
+        .node-8 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgb(138,39,165);
+        }
+        .node-9 {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #1392AB;
+        }
+
+        p{
+            margin-bottom: 0;
+        }
+
+        .rule{
+            width : 100%;
+            height : 3px;
+            background-color: #00ADB5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex">
+        <nav class="d-flex flex-column navigation">
+            <div class="menu mt-5 mb-3 px-2">
+                <a class="text-center" aria-current="page" href="/">
+                    <img src="{{url_for('static', filename='images/home.png')}}" alt="" class="menu-img"><br>
+                    <span class="nav-texts">Home</span>
+                </a>
+            </div>
+            <div class="menu mb-3 px-2 active-menu">
+                <a class="text-center" aria-current="page" href="/graph">
+                    <img src="{{url_for('static', filename='images/visual.png')}}" alt="" class="menu-img"><br>
+                    <span class="nav-texts">Visualize</span>
+                </a>
+            </div>
+            <div class="menu mb-3 px-2">
+                <a class="text-center" aria-current="page" href="/predict">
+                    <img src="{{url_for('static', filename='images/prediction.png')}}" alt="" class="menu-img"><br>
+                    <span class="nav-texts">Predict</span>
+                </a>
+            </div>
+            <div class="menu mb-3 px-2">
+                <a class="text-center" aria-current="page" href="/comments">
+                    <img src="{{url_for('static', filename='images/message.png')}}" alt="" class="menu-img"><br>
+                    <span class="nav-texts">Comments</span>
+                </a>
+            </div>
+        </nav>
+        <div class="chart-content">
+            <div class="mb-3">
+                <h1>Visualization</h1>
+                <div class="rule"></div>
+            </div>
+            <div class="mongodb-charts d-flex flex-wrap gap-3">
+                <div class="div-1">
+                <iframe
+                    style="background: #21313C;border: none;border-radius: 2px;box-shadow: 0 2px 10px 0 rgba(70, 76, 79, .2);"
+                    width="440" height="380"
+                    src="https://charts.mongodb.com/charts-project-0-mdnhc/embed/charts?id=664898f4-2920-4aed-8f5f-1f73f346bf29&maxDataAge=3600&theme=dark&autoRefresh=true"></iframe>
+                </div>
+                <div class="div-2">
+                    <iframe
+                    style="background: #21313C;border: none;border-radius: 2px;box-shadow: 0 2px 10px 0 rgba(70, 76, 79, .2);"
+                    width="640" height="380"
+                    src="https://charts.mongodb.com/charts-project-0-mdnhc/embed/charts?id=66489888-bf8b-4ab3-885a-45f9627591d0&maxDataAge=3600&theme=dark&autoRefresh=true"></iframe>
+                </div>
+                <div class="div-3">
+                    <iframe
+                    style="background: #21313C;border: none;border-radius: 2px;box-shadow: 0 2px 10px 0 rgba(70, 76, 79, .2);"
+                    width="580" height="380"
+                    src="https://charts.mongodb.com/charts-project-0-mdnhc/embed/charts?id=66461ac5-b66b-4fc1-8333-c25696d03d6d&maxDataAge=300&theme=dark&autoRefresh=true"></iframe>
+                </div>
+                    <div class="d-inline-block div-4 px-4 py-2">
+                    <h3>Nodes</h3>
+                    <div class="d-flex flex-column gap-1 mt-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="node-1"></div>
+                            <p>1. Plain St, Shivaji Nagar, Bengaluru</p>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="node-2"></div>
+                            <p>2. Shivaji Nagar Bangalore</p>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="node-3"></div>
+                            <p>3. Venkataswamy Naidu Rd, Vasanth Nagar, Bengaluru</p>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="node-4"></div>
+                            <p>4. Queens Rd, Shivaji Nagar, Bengaluru</p>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="node-5"></div>
+                            <p>5. Infantry Rd, Shivaji Nagar, Bengaluru</p>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="node-6"></div>
+                            <p>6. Cubbon Rd, Sampangi Rama Nagar, Tasker Town, Bengaluru</p>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="node-7"></div>
+                            <p>7. No. 107, Central St, Bharati Nagar, Shivaji Nagar, Bengaluru</p>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="node-8"></div>
+                            <p>8. Central St, Shivaji Nagar, Bengaluru</p>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="node-9"></div>
+                            <p>9. No 5 LG City Plaza, Dharmaraja Koil St, Bengaluru</p>
+                        </div>
+                    </div>
+                    <!-- <ol>
+                        <li>Plain St, Shivaji Nagar, Bengaluru</li>
+                        <li>Shivaji Nagar Bangalore</li>
+                        <li>Venkataswamy Naidu Rd, Vasanth Nagar, Bengaluru</li>
+                        <li>Queens Rd, Shivaji Nagar, Bengaluru</li>
+                        <li>Infantry Rd, Shivaji Nagar, Bengaluru</li>
+                        <li>Cubbon Rd, Sampangi Rama Nagar, Tasker Town, Bengaluru</li>
+                        <li>No. 107, Central St, Bharati Nagar, Shivaji Nagar, Bengaluru</li>
+                        <li>Central St, Shivaji Nagar, Bengaluru</li>
+                        <li>No 5 LG City Plaza, Dharmaraja Koil St, Bengaluru</li>
+                    </ol> -->
+                </div>
+            </div>
+            <div class="mt-5">
+                <h1>Traffic Data Visualization</h1>
+                <div class="d-flex align-items-center form-data mt-4">
+                    <div>
+                        <label for="node_id" class="mb-2">Select Node</label>
+                        <select name="node_id" id="node_id" class="form-select">
+                            {% for node in results %}
+                            <option value="{{ node.id }}">{{ node.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="type" class="mb-2">Select Data Type</label>
+                        <select name="type" id="type" class="form-select">
+                            {% for data_type in types %}
+                            <option value="{{ data_type }}">{{ data_type }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button id="generate-chart" class="btn btn-primary align-self-end">Generate Chart</button>
+                </div>
+                <div id="chart-container" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateChart(nodeId, dataType, nodeName) {
+            fetch(`/graph/node?node_id=${nodeId}&type=${dataType}`)
+                .then(response => response.json())
+                .then(data => {
+                    const timestamps = data.timestamps;
+                    const count = data.count;
+
+                    const chartData = [{
+                        x: timestamps,
+                        y: count,
+                        mode: 'lines+markers',
+                        marker: {
+                            size: 6
+                        },
+                        line: {
+                            color: '#00ADB5',
+                            width: 4
+                        },
+                        marker: {
+                            color: 'rgb(55, 128, 211)',
+                            size: 10
+                        }
+                    }];
+
+                    const chartLayout = {
+                        title: `${dataType} Over Time for Node ${nodeName}`,
+                        yaxis: { title: dataType, color: '#00ADB5' },
+                        xaxis: { autotick: false, tickangle: 30, color: '#00ADB5' },
+                        width: 1085,
+                        height: 400,
+                        margin: {
+                            l: 80,
+                            r: 150,
+                            t: 50,
+                            b: 120
+                        }
+                    };
+                    Plotly.newPlot('chart-container', chartData, chartLayout);
+                });
+        }
+
+        document.getElementById('generate-chart').addEventListener('click', function () {
+
+            const nodeId = document.getElementById('node_id').value;
+
+            const dataType = document.getElementById('type').value;
+            const name = document.getElementById('node_id').options[nodeId].text;
+
+            generateChart(nodeId, dataType, name);
+        });
+    </script>
+</body>
+
+</html>

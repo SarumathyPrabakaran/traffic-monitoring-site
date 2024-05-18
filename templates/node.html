@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Node Data</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Node Data</h1>
+    
+    <h2>Vehicle Count</h2>
+    <div id="vehicle-count-graph">
+        {{ vehicle_graph | safe }}
+        <!-- Graph will be rendered here -->
+    </div>
+
+    <h2>Pothole Count</h2>
+    <div id="pothole-count-graph">
+        {{ pothole_graph | safe }}
+    </div>
+
+    <h2>People Count</h2>
+    <div id="people-count-graph">
+        {{ people_graph | safe }}
+    </div>
+
+    <script>
+        function updateGraphs() {
+            var node_id = 1;
+            fetch(`/graph/${node_id}`)
+                .then(response => response.json())
+                .then(data => {
+                    Plotly.newPlot('vehicle-count-graph', data.vehicle_graph);
+                    Plotly.newPlot('pothole-count-graph', data.pothole_graph);
+                    Plotly.newPlot('people-count-graph', data.people_graph);
+                });
+        }
+
+      
+        updateGraphs();
+
+        setInterval(updateGraphs, 5000);
+    </script>
+</body>
+</html>

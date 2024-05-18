@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Traffic</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Aclonica&family=Advent+Pro&family=Dancing+Script&family=Inknut+Antiqua&family=Inter&family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600;1,700&family=Kaushan+Script&family=Montserrat:wght@400;500;600&family=Open+Sans:wght@400;500;600&family=Poppins:ital,wght@0,300;0,500;0,600;1,300&family=Rubik:wght@300;400;500;600;700;800&family=Sen:wght@400;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #0d6efd;
+        }
+
+        .fluid-container {
+            padding-top: 20px;
+        }
+
+        .detail-container,
+        .map-container,
+        .alert-container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .v-nums {
+            font-size: 30px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .v-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .map-view {
+            width: 100%;
+            height: 100vh;
+        }
+
+        .alert-container h3 {
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+
+        #alertList th {
+            color: #0d6efd;
+        }
+
+        #alertList td {
+            color: #212529;
+        }
+
+        .alert-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .alert-card p {
+            margin-bottom: 5px;
+        }
+
+        .navbar {
+            width: 5%;
+            height: 100vh;
+            /* position : fixed; */
+            background-color: #222831 !important;
+            color: #fff;
+        }
+
+        .nav-link {
+            color: #fff !important;
+            font-weight: normal;
+        }
+
+        .dashboard {
+            background-color: #fff;
+            z-index: 401;
+            width: 90%;
+            /* margin: 2rem auto; */
+            right: 5%;
+            margin-top: 2rem;
+            background-color: #EEEEEE;
+        }
+
+        .count {
+            font-size: 2rem;
+            color: #00ADB5;
+            font-weight: bold;
+            margin-bottom: 0;
+        }
+
+        .entity {
+            font-size: 1.3rem;
+            color: #222831;
+        }
+
+        .menu-img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .table-content {
+            z-index: 401;
+            background-color: #EEEEEE;
+            top: 35%;
+            right: 5%;
+            width: 33%;
+        }
+
+        .alertBtn {
+            z-index: 401;
+            top: 28%;
+            right: 5%;
+            background-color: #00ADB5;
+            border: none;
+        }
+
+        .alertBtn:hover {
+            background-color: #393E46;
+            color: #fff;
+        }
+
+        .table-data {
+            color: black !important;
+        }
+
+        .table-menu {
+            color: black !important
+        }
+
+        .tab-btn.active {
+            border-color: #00ADB5 !important;
+            border: 2px solid;
+            border-bottom: none;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #00ADB5;
+        }
+
+        #nav-home,
+        #nav-profile,
+        #nav-active {
+            height: 300px;
+            overflow-y: scroll;
+        }
+
+        .nav-texts {
+            font-size: 0.7rem;
+        }
+
+        /* #nav-active::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 173, 181, 0.3);
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+
+        #nav-profile::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 173, 181, 0.3);
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+
+        #nav-home::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 173, 181, 0.3);
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+
+        #nav-active::-webkit-scrollbar {
+            width: 10px;
+            background-color: #F5F5F5;
+        }
+
+        #nav-profile::-webkit-scrollbar {
+            width: 10px;
+            background-color: #F5F5F5;
+        }
+
+        #nav-home::-webkit-scrollbar {
+            width: 10px;
+            background-color: #F5F5F5;
+        }
+
+        #nav-active::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #00ADB5;
+        }
+
+        #nav-home::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #00ADB5;
+        }
+
+        #nav-profile::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            background-color: #00ADB5;
+        } */
+
+        .w-95 {
+            width: 95%;
+        }
+
+        .active-menu {
+            border-left: 3px solid #00ADB5;
+        }
+
+        .nav-item {
+            padding: 5px 0;
+        }
+
+        #alerts-side-table{
+            height : 100vh;
+            overflow: scroll;
+            width : 40%;
+            background-color: #222831;
+            color : white !important
+        }
+
+        .alerts-table{
+            width : 100%;
+            margin : 0 auto;
+        }
+
+        .alert-title{
+            color : #00ADB5;
+        }
+
+        .menu{
+            width: 100%;
+            display : flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap : 3;
+        }
+
+        a{
+            text-decoration: none;
+            color : white;
+        }
+
+        nav.navigation{
+            background-color: #393E46;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="d-flex">
+        <!-- <nav class="navbar navbar-expand-lg bg-body-tertiary d-flex align-items-start justify-content-center">
+            <div class="collapse navbar-collapse d-flex flex-column justify-content-center align-items-center mt-2"
+                id="navbarNav">
+                <div class="navbar-nav d-flex flex-column align-items-center gap-4">
+                    <div class="nav-item text-center">
+                        <a class="nav-link active-menu" aria-current="page" href="#">
+                            <img src="{{url_for('static', filename='images/home.png')}}" alt="" class="menu-img"><br>
+                            <span class="nav-texts">Home</span>
+                        </a>
+                    </div>
+                    <div class="nav-item text-center">
+                        <a class="nav-link" aria-current="page" href="#">
+                            <img src="{{url_for('static', filename='images/visual.png')}}" alt="" class="menu-img"><br>
+                            <span class="nav-texts">Visualize</span>
+                        </a>
+                    </div>
+                    <div class="nav-item text-center">
+                        <a class="nav-link active-menu" aria-current="page" href="#">
+                            <img src="{{url_for('static', filename='images/message.png')}}" alt="" class="menu-img"><br>
+                            <span class="nav-texts">Comments</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav> -->
+        <nav class="d-flex flex-column navigation">
+            <div class="menu mt-5 mb-3 active-menu px-2">
+                <a class="text-center" aria-current="page" href="/">
+                    <img src="{{url_for('static', filename='images/home.png')}}" alt="" class="menu-img"><br>
+                    <span class="nav-texts">Home</span>
+                </a>
+            </div>
+            <div class="menu mb-3 px-2">
+                <a class="text-center" aria-current="page" href="/graph">
+                    <img src="{{url_for('static', filename='images/visual.png')}}" alt="" class="menu-img"><br>
+                    <span class="nav-texts">Visualize</span>
+                </a>
+            </div>
+            <div class="menu mb-3 px-2">
+                <a class="text-center" aria-current="page" href="/predict">
+                    <img src="{{url_for('static', filename='images/prediction.png')}}" alt="" class="menu-img"><br>
+                    <span class="nav-texts">Predict</span>
+                </a>
+            </div>
+            <div class="menu mb-3 px-2">
+                <a class="text-center" aria-current="page" href="/comments.html">
+                    <img src="{{url_for('static', filename='images/message.png')}}" alt="" class="menu-img"><br>
+                    <span class="nav-texts">Comments</span>
+                </a>
+            </div>
+        </nav>
+        <div class="map-view" id="map-view">
+            <div id="map">
+                <div
+                    class="dashboard position-absolute top-0 d-flex justify-content-between px-5 py-2 rounded shadow-lg" id="dashboard">
+                    <div class="d-flex flex-column align-items-center">
+                        <p class="count" id="v-nums">123</p>
+                        <p class="entity">Total nodes</p>
+                    </div>
+                    <div class="d-flex flex-column align-items-center">
+                        <p class="count" id="v-nums-vehicles">123</p>
+                        <p class="entity">Total Vehicles</p>
+                    </div>
+                    <div class="d-flex flex-column align-items-center">
+                        <p class="count" id="v-nums-potholes">123</p>
+                        <p class="entity">Pot Holes</p>
+                    </div>
+                    <div class="d-flex flex-column align-items-center">
+                        <p class="count" id="v-nums-parked">123</p>
+                        <p class="entity">Parked Vehicles</p>
+                    </div>
+                    <div class="d-flex flex-column align-items-center">
+                        <p class="count" id="v-nums-people">123</p>
+                        <p class="entity">People</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary alertBtn position-absolute" id="alert-btn">Alerts
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger visually-hidden" id="badge-text">
+                        99+
+                        <span class="visually-hidden">unread messages</span>
+                      </span>
+                </button>
+                <div
+                    class="table-content position-absolute d-flex justify-content-between px-3 py-2 rounded shadow-lg d-flex flex-column" id="table-content">
+                    <nav class="w-95">
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <button class="nav-link active tab-btn" id="nav-home-tab" data-bs-toggle="tab"
+                                data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home"
+                                aria-selected="true"><span class="table-menu">Instants</span></button>
+                            <button class="nav-link tab-btn" id="nav-profile-tab" data-bs-toggle="tab"
+                                data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile"
+                                aria-selected="false"><span class="table-menu">Events</span></button>
+                            <button class="nav-link tab-btn" id="nav-active-tab" data-bs-toggle="tab"
+                                data-bs-target="#nav-active" type="button" role="tab" aria-controls="nav-contact"
+                                aria-selected="false"><span class="table-menu">Active Alerts</span></button>
+
+                            <!-- <button class="nav-link" id="nav-disabled-tab" data-bs-toggle="tab" data-bs-target="#nav-disabled" type="button" role="tab" aria-controls="nav-disabled" aria-selected="false" disabled>Disabled</button> -->
+                        </div>
+                    </nav>
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                            aria-labelledby="nav-home-tab" tabindex="0">
+                            <!-- <div id="instanceTableContainer" class="overflow-scroll"></div> -->
+                            select a marker to view the data
+
+                        </div>
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab"
+                            tabindex="0">
+                            Select a marker to view data
+                        </div>
+                        <div class="tab-pane fade" id="nav-active" role="tabpanel" aria-labelledby="nav-active-tab"
+                            tabindex="0">
+                            <!-- <div id="eventTableContainer"></div> -->
+                            select a marker to view the data
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+        <div class="d-none" id="alerts-side-table">
+            <div class="d-flex justify-content-end pe-2 pt-2 pb-2" data-bs-theme="dark">
+                <button id="close-btn" type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            <div class="d-flex justify-content-between align-items mt-2 mb-2 px-4">
+                <h3 class="alert-title">Alerts</h3>
+                <button href="#" class="btn btn-primary ms-auto btn-sm"  onclick="download_table_as_csv('alerts-table');">Download</button>
+            </div>
+            <table id="alerts-table" class="table table-striped alerts-table mt-3">
+                <thead>
+                    <tr>
+                        <th>Node Name</th>
+                        <th>Start Time</th>
+                        <th>Alert Time</th>
+                        <th>Type</th>
+                        <th>Alerts Raised</th>
+                    </tr>
+                </thead>
+                <tbody id="alertList"></tbody>
+            </table>
+        </div>
+
+    </div>
+    </div>
+    <!-- <div class="fluid-container">
+        <div class="container detail-container">
+            <div class="row">
+                <div class="col">
+                    <div class="row v-nums" id="v-nums">4</div>
+                    <div class="row v-name">Total Nodes</div>
+                    <div class="col map">
+
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="row v-nums" id="v-nums-vehicles">120</div>
+                    <div class="row v-name">Total Vehicles</div>
+                </div>
+                <div class="col">
+                    <div class="row v-nums" id="v-nums-potholes">200</div>
+                    <div class="row v-name">Pot holes</div>
+                </div>
+                <div class="col">
+                    <div class="row v-nums" id="v-nums-parked">30</div>
+                    <div class="row v-name">Parked Vehicles</div>
+                </div>
+                <div class="col">
+                    <div class="row v-nums" id="v-nums-people">160</div>
+                    <div class="row v-name">People</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container map-container">
+
+            <div class="row">
+                <div id="map">
+                    
+                </div>
+                <div class="col">
+                    <h4>Instance Table</h4>
+                    <div id="instanceTableContainer" style="max-height: 320px; overflow-y: scroll;"></div>
+                    <h4>Event Table</h4>
+                    <div id="eventTableContainer"style="max-height: 300px; overflow-y: scroll;"></div>
+                </div>
+                <div class="row">
+                
+                <div class="container detail-container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="row v-nums" id="n-auto">-</div>
+                            <div class="row v-name">Auto</div>
+                        </div>
+                        <div class="col">
+                            <div class="row v-nums" id="n-truck">-</div>
+                            <div class="row v-name">Trucks</div>
+                        </div>
+                        <div class="col">
+                            <div class="row v-nums" id="n-people">-</div>
+                            <div class="row v-name">People</div>
+                        </div>
+                        <div class="col">
+                            <div class="row v-nums" id="n-bike">-</div>
+                            <div class="row v-name">Bikes</div>
+                        </div>
+                        <div class="col">
+                            <div class="row v-nums" id="n-car">-</div>
+                            <div class="row v-name">Cars</div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container alert-container">
+        <h3>Alerts</h3>
+        <div style="max-height: 300px; overflow-y: scroll;">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Node Name</th>
+                    <th>Start Time</th>
+                    <th>Alert Time</th>
+                    <th>Type</th>
+                    <th>Alerts Raised</th>
+                </tr>
+            </thead>
+            <tbody id="alertList"></tbody>
+        </table>
+    </div>
+    </div> -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script>
+        fetchAlerts();
+        const alertButton = document.getElementById('alert-btn');
+        const mapContent = document.getElementById('map-view');
+        const alertTable = document.getElementById('alerts-side-table');
+        const closeBtn = document.getElementById('close-btn');
+        const tableContent = document.getElementById('table-content');
+        const dashboard = document.getElementById('dashboard');
+        const badgeText = document.getElementById('badge-text');
+
+        const scrollContainers = document.querySelectorAll('.tab-pane');
+
+        // Add a wheel event listener to each scroll container
+        scrollContainers.forEach(container => {
+            container.addEventListener('wheel', function(event) {
+                // Check if the container is scrollable in the direction of the scroll
+                if (event.deltaY > 0 && container.scrollHeight > container.clientHeight) {
+                    // Scroll the container and prevent the default action
+                    container.scrollTop += event.deltaY;
+                    event.preventDefault();
+                } else if (event.deltaY < 0 && container.scrollTop > 0) {
+                    // Scroll the container and prevent the default action
+                    container.scrollTop += event.deltaY;
+                    event.preventDefault();
+                }
+            });
+        });
+
+        scrollContainers.forEach(container => {
+            container.addEventListener('wheel', function(event) {
+                event.stopPropagation();
+            }, { capture: true });
+        });
+
+        alertButton.onclick = () => {
+            mapContent.style.width = '60%';
+            tableContent.style.width = '40%';
+            dashboard.style.width = '95%';
+            dashboard.style.right = '2%';
+            alertTable.classList.remove('d-none');
+        };
+
+        closeBtn.onclick = () =>{
+            // alert("close clicked");
+            mapContent.style.width = '100%';
+            tableContent.style.width = '33%';
+            dashboard.style.width = '90%';
+            dashboard.style.right = '5%';
+            alertTable.classList.add('d-none');
+        }
+
+        var map = L.map('map').setView([12.988851760695342, 77.59352385460303], 14);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        const result = JSON.parse('{{result | tojson}}');
+        console.log(result);
+
+        result.forEach(e => {
+            var m = L.marker([e.latitude, e.longitude]).addTo(map);
+            p = new L.Popup({ autoClose: true, closeOnClick: false })
+                .setContent(e.address)
+                .setLatLng(e.latitude, e.longitude);
+
+            m.bindPopup(p);
+            m.on('click', function () {
+                fetchEvents(e.id);
+
+            });
+        });
+
+
+        function fetchEvents(nodeId) {
+            fetchInstance(nodeId);
+            fetchNodeData(nodeId);
+            fetchActiveAlerts(nodeId);
+            fetch(`/events/${nodeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    var eventsHtml ='<button class="btn btn-primary ms-auto mt-2 mb-2 btn-sm"  onclick="download_table_as_csv(\'events-table\');">Download</button>'
+
+                    eventsHtml += '<table id="events-table" class="table table-striped">';
+                    eventsHtml += '<thead><tr><th>Type</th><th>Start Time</th><th>End Time</th><th>Alerts</th></tr></thead>';
+                    eventsHtml += '<tbody>';
+                    data.forEach(event => {
+                        eventsHtml += `<tr><td>${event.type}</td><td>${event.start_time}</td><td>${event.end_time}</td><td>${event.alerts_raised}</td></tr>`;
+                    });
+                    eventsHtml += '</tbody></table>';
+                    document.getElementById('nav-profile').innerHTML = eventsHtml;
+                })
+                .catch(error => console.error('Error fetching events:', error));
+        }
+
+        function fetchInstance(nodeId) {
+            fetch(`/instances/${nodeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    var instanceHtml ='<button class="btn btn-primary ms-auto mt-2 mb-2 btn-sm"  onclick="download_table_as_csv(\'instances-table\');">Download</button>'
+
+                    instanceHtml += '<table id="instances-table" class="table table-striped">';
+                    instanceHtml += '<thead><tr><th>Time Stamp</th><th>Vechicle Count</th><th>Pot Hole Count</th><th>Parked Vehicle Count</th><th>People Count</th></tr></thead>';
+                    instanceHtml += '<tbody>';
+                    data.forEach(instance => {
+                        instanceHtml += `<tr><td>${instance.time_stamp}</td><td>${instance.vehicle_count}</td><td>${instance.pot_hole_count}</td><td>${instance.parked_vehicle_count || ''}</td><td>${instance.people_count}</td></tr>`;
+                    });
+                    instanceHtml += '</tbody></table>';
+
+                    document.getElementById('nav-home').innerHTML = instanceHtml;
+                })
+                .catch(error => console.error('Error fetching Instances:', error));
+        }
+
+        function fetchNodeData(nodeId) {
+            console.log("Here")
+            fetch(`/node/${nodeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('#n-auto').innerText = data.auto_count;
+                    document.querySelector('#n-truck').innerText = data.truck_count;
+                    document.querySelector('#n-people').innerText = data.people_count;
+                    document.querySelector('#n-bike').innerText = data.bike_count;
+                    document.querySelector('#n-car').innerText = data.car_count;
+                    document.querySelector('#n-name').innerText = data.node_name;
+
+                })
+                .catch(error => console.error('Error fetching data:', error));
+
+        }
+
+
+        function fetchActiveAlerts(nodeId) {
+            fetch(`/alerts/active/${nodeId}`)
+                .then(response => response.json())
+                .then(data => {
+
+                    var activeAlertsHtml ='<button class="btn btn-primary ms-auto mt-2 mb-2 btn-sm"  onclick="download_table_as_csv(\'active-table\');">Download</button>'
+                    activeAlertsHtml += '<table id="active-table" class="table table-striped">';
+                    activeAlertsHtml += '<thead><tr><th>Start Time Stamp</th><th>Vechicle</th><th>Total Alerts</th></tr></thead>';
+                    activeAlertsHtml += '<tbody>';
+                    data.forEach(alert => {
+                        activeAlertsHtml += `<tr><td>${alert.start_time}</td><td>${alert.type}</td><td>${alert.alerts_raised}</td></tr>`;
+                    });
+                    activeAlertsHtml += '</tbody></table>';
+
+                    document.getElementById('nav-active').innerHTML = activeAlertsHtml;
+                })
+                .catch(error => console.error('Error fetching alerts:', error));
+        }
+
+        function fetchDataAndUpdate() {
+            console.log("Here")
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('#v-nums').innerText = data.totalNodes;
+                    document.querySelector('#v-nums-vehicles').innerText = data.totalVehicles;
+                    document.querySelector('#v-nums-potholes').innerText = data.totalPotholes;
+                    document.querySelector('#v-nums-parked').innerText = data.parkedVehicles;
+                    document.querySelector('#v-nums-people').innerText = data.peopleCount;
+
+
+                })
+                .catch(error => console.error('Error fetching data:', error));
+
+        }
+
+        fetchDataAndUpdate();
+
+        function updateAlertsList(alert) {
+            var alertList = document.getElementById('alertList');
+            var alertRow = document.createElement('tr');
+            alertRow.innerHTML = `
+                          <td>${alert.nodeId}</td>
+                          <td>${alert.startTime}</td>
+                          <td>${alert.alertTime}</td>
+                          <td>${alert.eventType}</td>
+                          <td>${alert.alerts}</td>`;
+            alertList.appendChild(alertRow);
+        }
+        function fetchAlerts() {
+            fetch('/alerts')
+                .then(response => response.json())
+                .then(data => {
+                    var alertList = document.getElementById('alertList');
+                    alertList.innerHTML = '';
+                    badgeText.innerText = data.length;
+                    badgeText.classList.remove('visually-hidden')
+                    data.forEach(alert => {
+                        updateAlertsList(alert);
+                    });
+                })
+                .catch(error => console.error('Error fetching alerts:', error));
+        }
+
+        function download_table_as_csv(table_id, separator = ',') {
+    
+                var rows = document.querySelectorAll('table#' + table_id + ' tr');
+            
+                var csv = [];
+                for (var i = 0; i < rows.length; i++) {
+                    var row = [], cols = rows[i].querySelectorAll('td, th');
+                    for (var j = 0; j < cols.length; j++) {
+                        var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+                        data = data.replace(/"/g, '""');
+                        row.push('"' + data + '"');
+                    }
+                    csv.push(row.join(separator));
+                }
+                var csv_string = csv.join('\n');
+               
+                var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+                var link = document.createElement('a');
+                link.style.display = 'none';
+                link.setAttribute('target', '_blank');
+                link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+                link.setAttribute('download', filename);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+        fetchAlerts();
+        setInterval(fetchAlerts, 300000); 
+    </script>
+</body>
+
+</html>
